@@ -1,7 +1,44 @@
+# .github/workflows/main.yml
+
+```yaml
+name: AI Stock Bot
+
+on:
+  schedule:
+    # 08:30 Thailand Time
+    - cron: '30 1 * * *'
+
+    # 14:00 Thailand Time
+    - cron: '0 7 * * *'
+
+    # 16:35 Thailand Time
+    - cron: '35 9 * * *'
+
+  workflow_dispatch:
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - run: pip install requests
+
+      - run: python ai_stock_bot.py
+```
+
+---
+
+# ai_stock_bot.py
+
+```python
 import os
 import requests
-import schedule
-import time
 from datetime import datetime
 
 TOKEN = os.getenv("TOKEN")
@@ -65,7 +102,7 @@ def send_telegram():
 
     url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
 
-    requests.post(
+    response = requests.post(
         url,
         data={
             "chat_id": CHAT_ID,
@@ -73,16 +110,74 @@ def send_telegram():
         }
     )
 
-    print("sent")
+    print(response.text)
+    print("Telegram message sent")
 
 
-schedule.every().day.at("08:30").do(send_telegram)
-schedule.every().day.at("14:00").do(send_telegram)
-schedule.every().day.at("16:35").do(send_telegram)
-
-# test once
 send_telegram()
+```
 
-while True:
-    schedule.run_pending()
-    time.sleep(30)
+---
+
+# สิ่งที่ต้องทำต่อ
+
+## 1. ตั้งค่า GitHub Secrets
+
+ไปที่:
+
+Settings → Secrets and variables → Actions
+
+กด:
+
+* New repository secret
+
+สร้าง 2 ตัว:
+
+### TOKEN
+
+ใส่ Telegram Bot Token
+
+### CHAT_ID
+
+ใส่ Telegram Chat ID
+
+---
+
+## 2. Commit ไฟล์
+
+อัปเดตทั้ง:
+
+* `.github/workflows/main.yml`
+* `ai_stock_bot.py`
+
+แล้วกด:
+
+* Commit changes
+
+---
+
+## 3. ทดสอบระบบ
+
+ไปที่:
+
+* Actions
+* AI Stock Bot
+* Run workflow
+
+ถ้าสำเร็จจะขึ้น:
+
+* ✅ Success
+
+และ Telegram จะได้รับข้อความทันที
+
+---
+
+# เวลา Cron ที่ตั้งไว้
+
+| เวลาไทย | Cron         |
+| ------- | ------------ |
+| 08:30   | `30 1 * * *` |
+| 14:00   | `0 7 * * *`  |
+| 16:35   | `35 9 * * *` |
+
+GitHub ใช้เวลา UTC จึงต้องลบ 7 ชั่วโมงจากเวลาไทย
