@@ -1,24 +1,78 @@
-name: AI Stock Bot
+import os
+import requests
+from datetime import datetime
 
-on:
-  schedule:
-    - cron: '30 1 * * *'
-    - cron: '0 7 * * *'
-    - cron: '35 9 * * *'
+TOKEN = os.getenv("TOKEN")
+CHAT_ID = os.getenv("CHAT_ID")
 
-  workflow_dispatch:
 
-jobs:
-  run-bot:
-    runs-on: ubuntu-latest
+def generate_stock_signal():
 
-    steps:
-      - uses: actions/checkout@v4
+    today = datetime.now().strftime("%d/%m/%Y %H:%M")
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
+    message = f"""
+📈 AI QUANT TERMINAL {today}
 
-      - run: pip install requests
+━━━━━━━━━━━━━━
 
-      - run: python ai_stock_bot.py
+CPALL 🟢 Buy: 60.0–60.5
+🎯 TP: 64–66
+🛑 SL: 57
+🤖 92%
+
+━━━━━━━━━━━━━━
+
+ADVANC 🟢 Buy: 288–290
+🎯 TP: 300–308
+🛑 SL: 279
+🤖 89%
+
+━━━━━━━━━━━━━━
+
+AOT 🟢 Buy: 68–69
+🎯 TP: 72–74
+🛑 SL: 65
+🤖 85%
+
+━━━━━━━━━━━━━━
+
+PTTEP 🟢 Buy: 152–154
+🎯 TP: 160–165
+🛑 SL: 147
+🤖 88%
+
+━━━━━━━━━━━━━━
+
+WHA 🟢 Buy: 5.40–5.45
+🎯 TP: 5.85–6.00
+🛑 SL: 5.15
+🤖 84%
+
+━━━━━━━━━━━━━━
+
+₿ BTC 🟢 Buy Zone
+🤖 Trend: Bullish
+
+━━━━━━━━━━━━━━
+"""
+
+    return message
+
+
+def send_telegram():
+
+    url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
+
+    response = requests.post(
+        url,
+        data={
+            "chat_id": CHAT_ID,
+            "text": generate_stock_signal()
+        }
+    )
+
+    print(response.text)
+    print("Telegram message sent")
+
+
+send_telegram()
