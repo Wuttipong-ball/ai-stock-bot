@@ -19,6 +19,6 @@ jobs:
         with:
           python-version: '3.11'
 
-      - run: pip install requests
+      - run: pip install requests schedule
 
       - run: python ai_stock_bot.py
