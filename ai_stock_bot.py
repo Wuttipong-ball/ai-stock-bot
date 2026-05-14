@@ -1,42 +1,3 @@
-# .github/workflows/main.yml
-
-```yaml
-name: AI Stock Bot
-
-on:
-  schedule:
-    # 08:30 Thailand Time
-    - cron: '30 1 * * *'
-
-    # 14:00 Thailand Time
-    - cron: '0 7 * * *'
-
-    # 16:35 Thailand Time
-    - cron: '35 9 * * *'
-
-  workflow_dispatch:
-
-jobs:
-  run-bot:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - run: pip install requests
-
-      - run: python ai_stock_bot.py
-```
-
----
-
-# ai_stock_bot.py
-
-```python
 import os
 import requests
 from datetime import datetime
@@ -51,48 +12,6 @@ def generate_stock_signal():
 
     message = f"""
 📈 AI QUANT TERMINAL {today}
-
-━━━━━━━━━━━━━━
-
-CPALL 🟢 Buy: 60.0–60.5
-🎯 TP: 64–66
-🛑 SL: 57
-🤖 92%
-
-━━━━━━━━━━━━━━
-
-ADVANC 🟢 Buy: 288–290
-🎯 TP: 300–308
-🛑 SL: 279
-🤖 89%
-
-━━━━━━━━━━━━━━
-
-AOT 🟢 Buy: 68–69
-🎯 TP: 72–74
-🛑 SL: 65
-🤖 85%
-
-━━━━━━━━━━━━━━
-
-PTTEP 🟢 Buy: 152–154
-🎯 TP: 160–165
-🛑 SL: 147
-🤖 88%
-
-━━━━━━━━━━━━━━
-
-WHA 🟢 Buy: 5.40–5.45
-🎯 TP: 5.85–6.00
-🛑 SL: 5.15
-🤖 84%
-
-━━━━━━━━━━━━━━
-
-₿ BTC 🟢 Buy Zone
-🤖 Trend: Bullish
-
-━━━━━━━━━━━━━━
 """
 
     return message
@@ -111,73 +30,6 @@ def send_telegram():
     )
 
     print(response.text)
-    print("Telegram message sent")
 
 
 send_telegram()
-```
-
----
-
-# สิ่งที่ต้องทำต่อ
-
-## 1. ตั้งค่า GitHub Secrets
-
-ไปที่:
-
-Settings → Secrets and variables → Actions
-
-กด:
-
-* New repository secret
-
-สร้าง 2 ตัว:
-
-### TOKEN
-
-ใส่ Telegram Bot Token
-
-### CHAT_ID
-
-ใส่ Telegram Chat ID
-
----
-
-## 2. Commit ไฟล์
-
-อัปเดตทั้ง:
-
-* `.github/workflows/main.yml`
-* `ai_stock_bot.py`
-
-แล้วกด:
-
-* Commit changes
-
----
-
-## 3. ทดสอบระบบ
-
-ไปที่:
-
-* Actions
-* AI Stock Bot
-* Run workflow
-
-ถ้าสำเร็จจะขึ้น:
-
-* ✅ Success
-
-และ Telegram จะได้รับข้อความทันที
-
----
-
-# เวลา Cron ที่ตั้งไว้
-
-| เวลาไทย | Cron         |
-| ------- | ------------ |
-| 08:30   | `30 1 * * *` |
-| 14:00   | `0 7 * * *`  |
-| 16:35   | `35 9 * * *` |
-
-GitHub ใช้เวลา UTC จึงต้องลบ 7 ชั่วโมงจากเวลาไทย
