@@ -1,49 +1,88 @@
+import os
 import requests
+import schedule
+import time
 from datetime import datetime
 
-TOKEN = "YOUR_NEW_TOKEN"
-CHAT_ID = "7288678832"
+TOKEN = os.getenv("TOKEN")
+CHAT_ID = os.getenv("CHAT_ID")
+
+
+def generate_stock_signal():
+
+    today = datetime.now().strftime("%d/%m/%Y %H:%M")
+
+    message = f"""
+📈 AI QUANT TERMINAL {today}
+
+━━━━━━━━━━━━━━
+
+CPALL 🟢 Buy: 60.0–60.5
+🎯 TP: 64–66
+🛑 SL: 57
+🤖 92%
+
+━━━━━━━━━━━━━━
+
+ADVANC 🟢 Buy: 288–290
+🎯 TP: 300–308
+🛑 SL: 279
+🤖 89%
+
+━━━━━━━━━━━━━━
+
+AOT 🟢 Buy: 68–69
+🎯 TP: 72–74
+🛑 SL: 65
+🤖 85%
+
+━━━━━━━━━━━━━━
+
+PTTEP 🟢 Buy: 152–154
+🎯 TP: 160–165
+🛑 SL: 147
+🤖 88%
+
+━━━━━━━━━━━━━━
+
+WHA 🟢 Buy: 5.40–5.45
+🎯 TP: 5.85–6.00
+🛑 SL: 5.15
+🤖 84%
+
+━━━━━━━━━━━━━━
+
+₿ BTC 🟢 Buy Zone
+🤖 Trend: Bullish
+
+━━━━━━━━━━━━━━
+"""
+
+    return message
+
 
 def send_telegram():
 
-```
-now = datetime.now().strftime("%d/%m/%Y %H:%M")
+    url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
 
-message = f"""
-```
+    requests.post(
+        url,
+        data={
+            "chat_id": CHAT_ID,
+            "text": generate_stock_signal()
+        }
+    )
 
-📈 AI STOCK BOT
-{now}
+    print("sent")
 
-CPALL
-🟢 Buy: 60–60.5
 
-ADVANC
-🟢 Buy: 288–290
+schedule.every().day.at("08:30").do(send_telegram)
+schedule.every().day.at("14:00").do(send_telegram)
+schedule.every().day.at("16:35").do(send_telegram)
 
-AOT
-🟢 Buy: 68–69
-
-PTTEP
-🟢 Buy: 152–154
-
-WHA
-🟢 Buy: 5.40–5.45
-
-₿ BTC/USD
-🟢 Buy: realtime
-"""
-
-```
-url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
-
-requests.post(
-    url,
-    data={
-        "chat_id": CHAT_ID,
-        "text": message
-    }
-)
-```
-
+# test once
 send_telegram()
+
+while True:
+    schedule.run_pending()
+    time.sleep(30)
